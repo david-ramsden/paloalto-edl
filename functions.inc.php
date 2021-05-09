@@ -43,13 +43,11 @@ function fetch_url($url) {
 	// Use cURL to fetch URL.
         $ch = curl_init();
 
-	// Use a proxy.
-	// Ignore certificate errors.
-	// Follow redirects.
-        curl_setopt($ch, CURLOPT_PROXY, 'http://gateway.zscloud.net');
-		curl_setopt($ch, CURLOPT_PROXYPORT, '80');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	// Uncomment the following options to use a proxy when making requests.
+        //curl_setopt($ch, CURLOPT_PROXY, 'http://gateway.zscloud.net');
+	//curl_setopt($ch, CURLOPT_PROXYPORT, '80');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignore certificate errors.
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects.
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
 
