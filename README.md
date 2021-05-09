@@ -16,7 +16,7 @@ The script will use a combination of public APIs and DNS queries to return a lis
 ## Installation
 1. Clone the repository and move somewhere within the web server's document root.
 2. Make the `cache` directory writeable by the web server (e.g. `chown www-data cache && chmod 755 cache`).
-3. If you need to use a proxy to connect to external resources from the web server, edit `functions.inc.php` and set the `CURLOPT_PROXY` and `CURLOPT_PROXYPORT` options, **otherwise comment these lines out**.
+3. If you need to use a proxy to connect to external resources from the web server, edit `functions.inc.php`, find the `CURLOPT_PROXY` and `CURLOPT_PROXYPORT` options, uncomment them and set them appropriately.
 
 ## Usage
 Create an External Dynamic List object on the firewall, where the source URL is: `http://your.server/edl/<vendor>/<service>`
@@ -24,6 +24,8 @@ Create an External Dynamic List object on the firewall, where the source URL is:
 ![Example EDL configuration screenshot](https://github.com/david-ramsden/paloalto-edl/blob/main/doc/resources/pa-edl-screenshot.png?raw=true "Example EDL configuration screenshot")
 
 Note: With PAN-OS 8.1, a source URL using HTTPS was problematic. This was fixed in PAN-OS 9.0 and above.
+
+When a request from the web server is made to an API, such as Microsoft 365, the results will be cached for 24 hours. To disable this caching functionality, either remove the `cache` directory or set permissions so that the web server can not write to this directory.
 
 ### Vendors and Services
 Vendor    | Service Required              | Services                                    | Optional Parameters                         |
