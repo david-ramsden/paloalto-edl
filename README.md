@@ -12,6 +12,8 @@ The script will use a combination of public APIs and DNS queries to return a lis
 ## Requirements
 * PHP 7 (will probably work with PHP 5).
 * Apache 2 with mod_rewrite.
+* Make outbound web requests (direct or via a proxy).
+* Resolve external FQDNs.
 
 ## Installation
 1. Clone the repository and move somewhere within the web server's document root.
