@@ -40,7 +40,7 @@
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-include('api.inc.php');
+include('functions.inc.php');
 
 /**
  * Takes an array of IP addresses.
