@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule edl/([\w-]+)(?:/([\w-]+))?$ /edl.php?vendor=$1&service=$2 [L]
