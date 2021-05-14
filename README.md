@@ -11,6 +11,7 @@ The script will use a combination of public APIs and DNS queries to return a lis
 
 ## Requirements
 * PHP 7 (will probably work with PHP 5).
+* cURL module for PHP.
 * Apache 2 with mod_rewrite.
 * Make outbound web requests (direct or via a proxy).
 * Resolve external FQDNs.
@@ -40,7 +41,7 @@ polycom   | No (defaults to `global`)     | `global`, `teams`, `sfb`            
 * `/edl/microsoft` would return all IPs and networks for Microsoft 365 services.
 * `/edl/microsoft/exchange` would return IPs and networks for Microsoft 365 Exchange Online service.
 * `/edl/zscaler/hub` would return IPs and networks for Zscaler (zscloud.net) Hub IPs.
-* `/edl/zscaler/cenr/zscloud=zscaler.net` would return IPs and networks for Zscaler (zscaler.net) CENR IPs.
+* `/edl/zscaler/cenr?zscloud=zscaler.net` would return IPs and networks for Zscaler (zscaler.net) CENR IPs.
 * `/edl/polycom/teams` would return IPs used for outbound calls to Polycom RealConnect service for Microsoft Teams.
 
 #### Notes
