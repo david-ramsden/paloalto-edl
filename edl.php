@@ -95,6 +95,7 @@ switch ($_GET['vendor']) {
 		$service = !empty($_GET['service']) ? $_GET['service'] : '';
 
 		// Fetch JSON.
+		// Note: If IPv6 should be included, change 'NoIPv6=true' to 'NoIPv6=false' below.
 		if (($json = json_decode(fetch_url('https://endpoints.office.com/endpoints/WorldWide?ClientRequestId=' . generate_guid() . '&NoIPv6=true&Instance=Worldwide'))) === null) {
 			error_log("vendor = " . $_GET['vendor'] . ", service = $service: Fetching JSON failed.");
 			http_response_code(503);
@@ -207,8 +208,8 @@ switch ($_GET['vendor']) {
 					}
 				}
 
-				// FQDNs to resolve and include.
-				$fqdns = array('mobile.zscloud.net', 'login.zscloud.net');
+				// FQDNs to resolve and include in the Hub IPs.
+				$fqdns = array("mobile.$zscloud", "login.$zscloud");
 				foreach ($fqdns as $fqdn) {
 					if (($results = dns_get_record($fqdn, DNS_A)) === false) {
 						error_log("vendor = " . $_GET['vendor'] . ", service = $service: dns_get_record() failed.");
