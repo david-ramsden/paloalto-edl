@@ -1,2 +1,4 @@
 RewriteEngine on
-RewriteRule edl/([\w-]+)(?:/([\w-]+))?$ edl.php?vendor=$1&service=$2 [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ([\w-]+)(?:/([\w-]+))?$ edl.php?vendor=$1&service=$2 [L,QSA]
