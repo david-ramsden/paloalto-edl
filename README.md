@@ -65,6 +65,7 @@ polycom   | No (defaults to `global`)     | `global`, `teams`, `sfb`            
 
 #### Notes
 * Requests for `microsoft` will only return IPv4 addresses. IPv6 is not requested but this can be changed in the code if required.
+* Requests for `aws` will only return IPv4 addresses.
 
 #### References
 * [Microsoft 365](https://docs.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide)
