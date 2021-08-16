@@ -103,6 +103,7 @@ switch ($_GET['vendor']) {
 		}
 
 		$ips = array();
+
 		foreach ($json as $element) {
 			foreach ($element as $key => $val) {
 				// Only interested in IPs.
@@ -146,6 +147,7 @@ switch ($_GET['vendor']) {
 
 				// Validate IPs.
 				$ips = array();
+
 				foreach ($json->{'ip'} as $ip) {
 					if (($ip = validate_ipv4($ip))) {
 						array_push($ips, $ip);
@@ -235,6 +237,40 @@ switch ($_GET['vendor']) {
 
 				break;
 		}
+
+		break;
+
+	case 'aws':
+		$service = !empty($_GET['service']) ? $_GET['service'] : 'amazon';
+
+		// Fetch JSON.
+		if (($json = json_decode(fetch_url('https://ip-ranges.amazonaws.com/ip-ranges.json'))) === null) {
+			error_log("vendor = " . $_GET['vendor'] . ", service = $service: Fetching JSON failed.");
+			http_response_code(503);
+			exit();
+		}
+
+		$ips = array();
+
+		// Iterate all IPv4 prefixes.
+		foreach ($json->{'prefixes'} as $element) {
+			// Find service that has been requested.
+			if (preg_match('/' . $element->{'service'} . '/i', $service)) {
+				// Check if a region has been requested and if this service belongs to that region.
+				if (!empty($_GET['region']) && preg_match('/' . $element->{'region'} . '/i', $_GET['region'])) {
+					if (($ip = validate_ipv4($element->{'ip_prefix'}))) {
+						array_push($ips, $ip);
+					}
+				// Otherwise no region was requested, so just return the IP prefix for the service.
+				} elseif (empty($_GET['region'])) {
+					if (($ip = validate_ipv4($element->{'ip_prefix'}))) {
+						array_push($ips, $ip);
+					}
+				}
+			}
+		}
+
+		display_ips($ips);
 
 		break;
 
