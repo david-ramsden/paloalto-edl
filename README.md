@@ -58,7 +58,7 @@ polycom   | No (defaults to `global`)     | `global`, `teams`, `sfb`            
 * `/paloalto-edl/microsoft` will return all IPs and networks for Microsoft 365 services.
 * `/paloalto-edl/microsoft/exchange` will return IPs and networks for Microsoft 365 Exchange Online service.
 * `/paloalto-edl/aws/ec2` will return all IPs and networks for AWS EC2 globally.
-* `/paloalto-edl/aws/s3&region=eu-west-3` will return all IPs and networks for AWS S3 in the eu-west-3 region.
+* `/paloalto-edl/aws/s3?region=eu-west-3` will return all IPs and networks for AWS S3 in the eu-west-3 region.
 * `/paloalto-edl/zscaler/hub` will return IPs and networks for Zscaler (zscloud.net) Hub IPs.
 * `/paloalto-edl/zscaler/cenr?zscloud=zscaler.net` will return IPs and networks for Zscaler (zscaler.net) CENR IPs.
 * `/paloalto-edl/polycom/teams` will return IPs used for outbound calls to Polycom RealConnect service for Microsoft Teams.
