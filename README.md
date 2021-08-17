@@ -4,8 +4,9 @@
 This provides a number of External Dynamic Lists (EDLs) to be used by a Palo Alto firewall. The following services are supported:
 
 * Microsoft 365.
-* AWS.
+* Amazon Web Services (AWS).
 * Zscaler.
+* Google Cloud Platform (GCP).
 * Polycom RealConnect.
 
 The script will use a combination of public APIs and DNS queries to return a list of IP addresses for use in an EDL.
@@ -47,18 +48,21 @@ Create an External Dynamic List object on the firewall, where the source URL is:
 Note: With PAN-OS 8.1, a source URL using HTTPS was problematic. This was fixed in PAN-OS 9.0 and above.
 
 ### Vendors and Services
-Vendor    | Service Required              | Services                                    | Optional Parameters                         |
-----------|-------------------------------|---------------------------------------------|---------------------------------------------|
-microsoft | No (will return all services) | `common`, `exchange`, `sharepoint`, `skype` |                                             |
-aws       | No (will return all services) | Refer to [services](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html#aws-ip-syntax) syntax. | `region=<region>` (refer to [region](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html#aws-ip-syntax) syntax|
-zscaler   | Yes                           | `cenr`, `pac`, `hub`                        | `zscloud=<cloud>` (defaults to zscloud.net) |
-polycom   | No (defaults to `global`)     | `global`, `teams`, `sfb`                    |                                             |
+Vendor    | Service Required                | Services                                    | Optional Parameters                          |
+----------|---------------------------------|---------------------------------------------|----------------------------------------------|
+microsoft | No (will return all services)   | `common`, `exchange`, `sharepoint`, `skype` |                                              |
+aws       | No (will return all services)   | Refer to [services](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html#aws-ip-syntax) syntax. | `region=<region>` (refer to [region](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html#aws-ip-syntax) syntax|
+gcp       | No                              | `google cloud`                              | `scope=<scope>` (region such as us-central1) |
+zscaler   | Yes                             | `cenr`, `pac`, `hub`                        | `zscloud=<cloud>` (defaults to zscloud.net)  |
+polycom   | No (defaults to `global`)       | `global`, `teams`, `sfb`                    |                                              |
 
 #### Examples
 * `/paloalto-edl/microsoft` will return all IPs and networks for Microsoft 365 services.
 * `/paloalto-edl/microsoft/exchange` will return IPs and networks for Microsoft 365 Exchange Online service.
 * `/paloalto-edl/aws/ec2` will return all IPs and networks for AWS EC2 globally.
 * `/paloalto-edl/aws/s3?region=eu-west-3` will return all IPs and networks for AWS S3 in the eu-west-3 region.
+* `/paloalto-edl/gcp` will return all IPs and networks for GCP.
+* `/paloalto-edl/gcp?scope=us-central1` will return all IPs and networks for GCP in the us-central1 region.
 * `/paloalto-edl/zscaler/hub` will return IPs and networks for Zscaler (zscloud.net) Hub IPs.
 * `/paloalto-edl/zscaler/cenr?zscloud=zscaler.net` will return IPs and networks for Zscaler (zscaler.net) CENR IPs.
 * `/paloalto-edl/polycom/teams` will return IPs used for outbound calls to Polycom RealConnect service for Microsoft Teams.
@@ -70,6 +74,7 @@ polycom   | No (defaults to `global`)     | `global`, `teams`, `sfb`            
 #### References
 * [Microsoft 365](https://docs.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide)
 * [AWS](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html)
+* [GCP](https://www.gstatic.com/ipranges/cloud.json)
 * [Zscaler](https://config.zscaler.com/)
 * [Polycom RealConnect](https://rc-docs.plcm.vc/docs/prerequisites#dns-hostnames)
 
