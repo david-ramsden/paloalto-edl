@@ -27,15 +27,6 @@
  *
  * Any errors (400 or 503) will be logged using error_log().
  *
- * Vendor: polycom
- *  Service: teams, sfb, global
- *  If no service is provided, "global" is the default.
- * Vendor: microsoft
- *  Service: exchange, sharepoint, lync, common
- *  If no service is provided, all services are returned.
- * Vendor: zscaler
- *  Service: pac, cenr, hub
- *  A service must be provided.
  */
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
@@ -56,7 +47,7 @@ function display_ips($ips) {
 
 	// Ensure there is at least 1 IP.
 	if (!count($ips)) {
-		error_log("vendor = " . $_GET['vendor'] . ", service = $service: No IPs to return.");
+		error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: No IPs to return.");
 		http_response_code(503);
 		exit();
 	}
@@ -68,13 +59,13 @@ function display_ips($ips) {
 
 header('Content-type: text/plain');
 
-switch ($_GET['vendor']) {
+switch (urldecode($_GET['vendor'])) {
 	case 'polycom':
-		$service = !empty($_GET['service']) ? $_GET['service'] : 'global';
+		$service = !empty($_GET['service']) ? urldecode($_GET['service']) : 'global';
 
 		// Get all DNS A records associated with the service.
 		if (($results = dns_get_record('edge-' . $service . '.plcm.vc', DNS_A)) === false) {
-			error_log("vendor = " . $_GET['vendor'] . ", service = $service: dns_get_record() failed.");
+			error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: dns_get_record() failed.");
 			http_response_code(503);
 			exit();
 		}
@@ -92,12 +83,12 @@ switch ($_GET['vendor']) {
 		break;
 
 	case 'microsoft':
-		$service = !empty($_GET['service']) ? $_GET['service'] : '';
+		$service = !empty($_GET['service']) ? urldecode($_GET['service']) : '';
 
 		// Fetch JSON.
 		// Note: If IPv6 should be included, change 'NoIPv6=true' to 'NoIPv6=false' below.
 		if (($json = json_decode(fetch_url('https://endpoints.office.com/endpoints/WorldWide?ClientRequestId=' . generate_guid() . '&NoIPv6=true&Instance=Worldwide'))) === null) {
-			error_log("vendor = " . $_GET['vendor'] . ", service = $service: Fetching JSON failed.");
+			error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: Fetching JSON failed.");
 			http_response_code(503);
 			exit();
 		}
@@ -134,13 +125,13 @@ switch ($_GET['vendor']) {
 		break;
 
 	case 'zscaler':
-		$zscloud = !empty($_GET['zscloud']) ? $_GET['zscloud'] : 'zscloud.net';
+		$zscloud = !empty($_GET['zscloud']) ? urldecode($_GET['zscloud']) : 'zscloud.net';
 
-		switch ($_GET['service']) {
+		switch (urldecode($_GET['service'])) {
 			case 'pac':
 				// Fetch JSON.
 				if (($json = json_decode(fetch_url("https://api.config.zscaler.com/$zscloud/pac/json"))) === null) {
-					error_log("vendor = " . $_GET['vendor'] . ", service = " . $_GET['service'] . ": Fetching JSON failed.");
+					error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Fetching JSON failed.");
 					http_response_code(503);
 					exit();
 				}
@@ -161,7 +152,7 @@ switch ($_GET['vendor']) {
 			case 'cenr':
 				// Fetch JSON.
 				if (($json = json_decode(fetch_url("https://api.config.zscaler.com/$zscloud/cenr/json"))) === null) {
-					error_log("vendor = " . $_GET['vendor'] . ", service = " . $_GET['service'] . ": Fetching JSON failed.");
+					error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Fetching JSON failed.");
 					http_response_code(503);
 					exit();
 				}
@@ -190,7 +181,7 @@ switch ($_GET['vendor']) {
 
 				// Fetch JSON.
 				if (($json = json_decode(fetch_url("https://api.config.zscaler.com/api/getdata/$zscloud/all/fcr"))) === null) {
-					error_log("vendor = " . $_GET['vendor'] . ", service = " . $_GET['service'] . ": Fetching JSON failed.");
+					error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Fetching JSON failed.");
 					http_response_code(503);
 					exit();
 				}
@@ -214,7 +205,7 @@ switch ($_GET['vendor']) {
 				$fqdns = array("mobile.$zscloud", "login.$zscloud");
 				foreach ($fqdns as $fqdn) {
 					if (($results = dns_get_record($fqdn, DNS_A)) === false) {
-						error_log("vendor = " . $_GET['vendor'] . ", service = $service: dns_get_record() failed.");
+						error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: dns_get_record() failed.");
 						continue;
 					}
 
@@ -231,7 +222,7 @@ switch ($_GET['vendor']) {
 
 			default:
 				// Service requested is unknown.
-				error_log("vendor = " . $_GET['vendor'] . ", service = " . $_GET['service'] . ": Service is not known.");
+				error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Service is not known.");
 				http_response_code(400);
 				exit();
 
@@ -241,11 +232,11 @@ switch ($_GET['vendor']) {
 		break;
 
 	case 'aws':
-		$service = !empty($_GET['service']) ? $_GET['service'] : 'amazon';
+		$service = !empty($_GET['service']) ? urldecode($_GET['service']) : 'amazon';
 
 		// Fetch JSON.
 		if (($json = json_decode(fetch_url('https://ip-ranges.amazonaws.com/ip-ranges.json'))) === null) {
-			error_log("vendor = " . $_GET['vendor'] . ", service = $service: Fetching JSON failed.");
+			error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: Fetching JSON failed.");
 			http_response_code(503);
 			exit();
 		}
@@ -257,7 +248,7 @@ switch ($_GET['vendor']) {
 			// Find service that has been requested.
 			if (preg_match('/' . $element->{'service'} . '/i', $service)) {
 				// Check if a region has been requested and if this service belongs to that region.
-				if (!empty($_GET['region']) && preg_match('/' . $element->{'region'} . '/i', $_GET['region'])) {
+				if (!empty($_GET['region']) && preg_match('/' . $element->{'region'} . '/i', urldecode($_GET['region']))) {
 					if (($ip = validate_ipv4($element->{'ip_prefix'}))) {
 						array_push($ips, $ip);
 					}
@@ -274,9 +265,43 @@ switch ($_GET['vendor']) {
 
 		break;
 
+	case 'gcp':
+		$service = !empty($_GET['service']) ? urldecode($_GET['service']) : 'google cloud';
+
+		// Fetch JSON.
+		if (($json = json_decode(fetch_url('https://www.gstatic.com/ipranges/cloud.json'))) === null) {
+			error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: Fetching JSON failed.");
+			http_response_code(503);
+			exit();
+		}
+
+		$ips = array();
+
+		// Iterate all prefixes.
+		foreach ($json->{'prefixes'} as $element) {
+			// Find service that has been requested.
+			if (preg_match('/' . $element->{'service'} . '/i', $service)) {
+				// Check if a scope has been requested and if this service belongs to that scope.
+				if (!empty($_GET['scope']) && preg_match('/' . $element->{'scope'} . '/i', urldecode($_GET['scope']))) {
+					if (($ip = validate_ipv4($element->{'ipv4Prefix'}))) {
+						array_push($ips, $ip);
+					}
+				// Otherwise no scope was requested, so just return the IPv4 prefix for the service.
+				} elseif (empty($_GET['scope'])) {
+					if (($ip = validate_ipv4($element->{'ipv4Prefix'}))) {
+						array_push($ips, $ip);
+					}
+				}
+			}
+		}
+
+		display_ips($ips);
+
+		break;
+
 	default:
 		// Vendor requested is unknown.
-		error_log("vendor = " . $_GET['vendor'] . ", service = " . $_GET['service'] . ": Vendor is not known.");
+		error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Vendor is not known.");
 		http_response_code(400);
 		exit();
 
