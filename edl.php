@@ -123,6 +123,7 @@ switch (urldecode($_GET['vendor'])) {
 		display_ips($ips);
 
 		break;
+		
         case 'okta':
                 $service = !empty($_GET['service']) ? urldecode($_GET['service']) : '';
 
