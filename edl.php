@@ -47,7 +47,7 @@ function display_ips($ips) {
 
 	// Ensure there is at least 1 IP.
 	if (!count($ips)) {
-		error_log("vendor = " . urldecode($_GET['vendor']) . ", service = $service: No IPs to return.");
+		error_log("vendor = " . urldecode($_GET['vendor']) . ", service = ". urldecode($_GET['service']) . ": No IPs to return.");
 		http_response_code(503);
 		exit();
 	}
@@ -123,6 +123,45 @@ switch (urldecode($_GET['vendor'])) {
 		display_ips($ips);
 
 		break;
+        case 'okta':
+                $service = !empty($_GET['service']) ? urldecode($_GET['service']) : '';
+
+                // Fetch JSON.
+                if (($json = json_decode(fetch_url("https://s3.amazonaws.com/okta-ip-ranges/ip_ranges.json"))) === null) {
+                        error_log("vendor = " . urldecode($_GET['vendor']) . ", service = " . urldecode($_GET['service']) . ": Fetching JSON failed.");
+                        http_response_code(503);
+                        exit();
+                }
+                $ips = array();
+
+                foreach ($json as $name => $element) {
+                        foreach ($element as $key => $val) {
+                                // Only interested in IPs.
+                                if ($key === 'ip_ranges' ) {
+                                        // If a specific service has been requested and it matches the serviceArea.
+                                        if (!empty($service) && preg_match('/' . $service . '/i', $name)) {
+                                                $ips = array_merge($ips, $val);
+                                        // Otherwise no service was requested so the serviceArea doesn't matter.
+                                        } elseif (empty($service)) {
+                                                $ips = array_merge($ips, $val);
+                                        }
+                                }
+                        }
+                }
+
+                // Validate the IPs.
+                foreach ($ips as $key => $val) {
+                        if (($valid_ip = validate_ipv4($val))) {
+                                $ips[$key] = $valid_ip;
+                        } else {
+                                // Remove element from array.
+                                unset($ips[$key]);
+                        }
+                }
+
+                display_ips($ips);
+
+                break;
 
 	case 'zscaler':
 		$zscloud = !empty($_GET['zscloud']) ? urldecode($_GET['zscloud']) : 'zscloud.net';
