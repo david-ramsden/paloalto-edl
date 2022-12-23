@@ -8,6 +8,7 @@ This provides a number of External Dynamic Lists (EDLs) to be used by a Palo Alt
 * Zscaler.
 * Google Cloud Platform (GCP).
 * Polycom RealConnect.
+* Okta.
 
 The script will use a combination of public APIs and DNS queries to return a list of IP addresses for use in an EDL.
 
@@ -55,6 +56,7 @@ aws       | No (will return all services)   | Refer to [services](https://docs.a
 gcp       | No                              | `google cloud`                              | `scope=<scope>` (region such as us-central1) |
 zscaler   | Yes                             | `cenr`, `pac`, `hub`                        | `zscloud=<cloud>` (defaults to zscloud.net)  |
 polycom   | No (defaults to `global`)       | `global`, `teams`, `sfb`                    |                                              |
+okta      | No (defaults to all groups)     | Refer to [groups](https://help.okta.com/en-us/Content/Topics/Security/ip-address-allow-listing.htm). | |
 
 #### Examples
 * `/paloalto-edl/microsoft` will return all IPs and networks for Microsoft 365 services.
@@ -66,6 +68,7 @@ polycom   | No (defaults to `global`)       | `global`, `teams`, `sfb`          
 * `/paloalto-edl/zscaler/hub` will return IPs and networks for Zscaler (zscloud.net) Hub IPs.
 * `/paloalto-edl/zscaler/cenr?zscloud=zscaler.net` will return IPs and networks for Zscaler (zscaler.net) CENR IPs.
 * `/paloalto-edl/polycom/teams` will return IPs used for outbound calls to Polycom RealConnect service for Microsoft Teams.
+* `/paloalto-edl/okta/emea_cell_1` will return IPs used for Production EMEA 1.
 
 #### Notes
 * Requests for `microsoft` will only return IPv4 addresses. IPv6 is not requested but this can be changed in the code if required.
@@ -77,6 +80,7 @@ polycom   | No (defaults to `global`)       | `global`, `teams`, `sfb`          
 * [GCP](https://www.gstatic.com/ipranges/cloud.json)
 * [Zscaler](https://config.zscaler.com/)
 * [Polycom RealConnect](https://rc-docs.plcm.vc/docs/prerequisites#dns-hostnames)
+* [Okta](https://s3.amazonaws.com/okta-ip-ranges/ip_ranges.json)
 
 #### Adding New Vendors and Services
 If you would like to add new vendors and services, please submit a Pull Request with the required code modifications or submit an Issue to make a request.
